@@ -1,38 +1,27 @@
 local version = 0.001
 if not VIP_USER or myHero.charName ~= "Kennen" then return end
-local AUTOUPDATE = true
-local SCRIPT_NAME = "LegendKennen"
 --{ Initiate Script (Checks for updates)
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
-local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
-
-if FileExist(SOURCELIB_PATH) then
-	require("SourceLib")
-else
-	DOWNLOADING_SOURCELIB = true
-	DownloadFile(SOURCELIB_URL, SOURCELIB_PATH, function() print("Required libraries downloaded successfully, please reload") end)
-end
-
-if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait...") return end
-
-if AUTOUPDATE then
-	 SourceUpdater(SCRIPT_NAME, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/VersionFiles/"..SCRIPT_NAME..".version"):CheckUpdate()
-end
-
-local RequireI = Require("SourceLib")
-RequireI:Add("vPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
-RequireI:Add("SOW", "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
-RequireI:Check()
-
-if RequireI.downloadNeeded == true then return end
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	function Initiate()
+		local scriptName = "LegendKennen"
+		printMessage = function(message) print("<font color=\"#00A300\"><b>"..scriptName..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>") end
+		if FileExist(LIB_PATH.."SourceLib.lua") then
+			require 'SourceLib'
+		else
+			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
+			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
+			return true
+		end
+		local libDownloader = Require(scriptName)
+		libDownloader:Add("Selector",	 "https://raw.githubusercontent.com/LegendBot/Scripts/master/Selector.lua")
+		libDownloader:Add("VPrediction", "https://raw.githubusercontent.com/honda7/BoL/master/Common/VPrediction.lua")
+		libDownloader:Add("SOW",		 "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua")
+		libDownloader:Check()
+		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
+		SourceUpdater(scriptName, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/VersionFiles/"..scriptName..".version"):CheckUpdate()
+		return false
+	end
+	if Initiate() then return end
+	printMessage("Loaded")
 --}
 --{ Initiate Data Load
 	local Kennen = {
