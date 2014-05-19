@@ -157,7 +157,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			Combat = Menu.General.Combo or Menu.General.Harass
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
 			WREADY = IsMarked and (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
-			EREADY = (SpellE:IsReady() and not EActive and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
+			EREADY = not EActive and (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
 			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ))
 			Target = GrabTarget()
 		--}	
@@ -281,7 +281,9 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 --{ Buff Manager
     function OnGainBuff(unit,buff)
         -- Lightning Rush active
-        if unit.isMe and buff.name == "KennenLightningRush" then EActive = true end
+        if unit.isMe and buff.name == "KennenLightningRush" 
+        then EActive = true 
+            DelayAction(function() EActive = false end, 2) end
         -- Mark gained
        	for i = 1, heroManager.iCount do
        		local hero = heroManager:GetHero(i)
@@ -295,7 +297,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
     end
     function OnLoseBuff(unit,buff)
         -- Lightning Rush ended
-        if unit.isMe and buff.name == KennenLightningRush then EActive = false end
+        if unit.isMe and buff.name == "KennenLightningRush" then EActive = false end
         -- Mark lost
         for i = 1, heroManager.iCount do
        		local hero = heroManager:GetHero(i)
