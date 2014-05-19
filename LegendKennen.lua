@@ -1,27 +1,38 @@
 local version = 0.001
 if not VIP_USER or myHero.charName ~= "Kennen" then return end
+local AUTOUPDATE = true
+local SCRIPT_NAME = "LegendKennen"
 --{ Initiate Script (Checks for updates)
-	function Initiate()
-		local scriptName = "Kennen"
-		printMessage = function(message) print("<font color=\"#00A300\"><b>"..scriptName..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>") end
-		if FileExist(LIB_PATH.."SourceLib.lua") then
-			require 'SourceLib'
-		else
-			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
-			return true
-		end
-		local libDownloader = Require(scriptName)
-		libDownloader:Add("Selector",	 "https://raw.githubusercontent.com/LegendBot/Scripts/master/Selector.lua")
-		libDownloader:Add("VPrediction", "https://raw.githubusercontent.com/honda7/BoL/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua")
-		libDownloader:Check()
-		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
-		SourceUpdater(scriptName, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME):CheckUpdate()
-		return false
-	end
-	if Initiate() then return end
-	printMessage("Loaded")
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
+local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
+
+if FileExist(SOURCELIB_PATH) then
+	require("SourceLib")
+else
+	DOWNLOADING_SOURCELIB = true
+	DownloadFile(SOURCELIB_URL, SOURCELIB_PATH, function() print("Required libraries downloaded successfully, please reload") end)
+end
+
+if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait...") return end
+
+if AUTOUPDATE then
+	 SourceUpdater(SCRIPT_NAME, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/VersionFiles/"..SCRIPT_NAME..".version"):CheckUpdate()
+end
+
+local RequireI = Require("SourceLib")
+RequireI:Add("vPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
+RequireI:Add("SOW", "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
+RequireI:Check()
+
+if RequireI.downloadNeeded == true then return end
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --}
 --{ Initiate Data Load
 	local Kennen = {
@@ -34,6 +45,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 --{ Script Load
 	function OnLoad()
 		--{ Variables
+		    IsMarked = false
 		    EActive = false
 			VP = VPrediction(true)
 			OW = SOW(VP)
@@ -106,6 +118,39 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 				DrawHandler:CreateCircle(myHero,Kennen.R["range"],1,{255, 255, 255, 255}):AddToMenu(Menu.Draw, "R Range", true, true, true):LinkWithSpell(SpellR, true)
 				DamageCalculator:AddToMenu(Menu.Draw,{_Q,_W,_E,_R,_AA})
 			--}
+						--{ Perma Show Settings
+				Menu:addSubMenu("Kennen: Perma Show","Perma")
+				Menu.Perma:addParam("INFO","The following options require a restart [F9 x2] to take effect",5,"")
+				Menu.Perma:addParam("GC","Perma Show 'General > Combo'",1,true)				
+				Menu.Perma:addParam("GF","Perma Show 'General > Farm'",1,true)
+				Menu.Perma:addParam("GH","Perma Show 'General > Harass'",1,true)
+				if Menu.Perma.GC then Menu.General:permaShow("Combo") end
+				if Menu.Perma.GF then Menu.General:permaShow("LastHit") end
+				if Menu.Perma.GH then Menu.General:permaShow("Harass") end
+				Menu.Perma:addParam("CQ","Perma Show 'Combo > Q'",1,false)
+				Menu.Perma:addParam("CW","Perma Show 'Combo > W'",1,false)
+				Menu.Perma:addParam("CE","Perma Show 'Combo > E'",1,false)
+				Menu.Perma:addParam("CR","Perma Show 'Combo > R'",1,false)
+				if Menu.Perma.CQ then Menu.Combo:permaShow("Q") end
+				if Menu.Perma.CW then Menu.Combo:permaShow("W") end
+				if Menu.Perma.CE then Menu.Combo:permaShow("E") end
+				if Menu.Perma.CR then Menu.Combo:permaShow("R") end
+				Menu.Perma:addParam("HQ","Perma Show 'Harass > Q'",1,false)
+				Menu.Perma:addParam("HW","Perma Show 'Harass > W'",1,false)
+				Menu.Perma:addParam("HE","Perma Show 'Harass > E'",1,false)
+				Menu.Perma:addParam("HR","Perma Show 'Harass > R'",1,false)
+				if Menu.Perma.HQ then Menu.Harass:permaShow("Q") end
+				if Menu.Perma.HW then Menu.Harass:permaShow("W") end
+				if Menu.Perma.HE then Menu.Harass:permaShow("E") end
+				if Menu.Perma.HR then Menu.Harass:permaShow("R") end
+				Menu.Perma:addParam("FQ","Perma Show 'Farm > Q'",1,false)
+				Menu.Perma:addParam("FE","Perma Show 'Farm > E'",1,false)
+				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
+				if Menu.Perma.FQ then Menu.Farm:permaShow("W") end
+				if Menu.Perma.FE then Menu.Farm:permaShow("E") end
+				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
+				if Menu.Perma.ET then Menu.Extra:permaShow("Tick") end
+			--}
 		--}
 	end
 --}
@@ -122,7 +167,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			RMANA = GetSpellData(_R).mana
 			Combat = Menu.General.Combo or Menu.General.Harass
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
-			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
+			WREADY = IsMarked and (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
 			EREADY = (SpellE:IsReady() and not EActive and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
 			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ))
 			Target = GrabTarget()
@@ -194,7 +239,6 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 		--}
 	end
 --}
-
 --{ Minion Selector
 	function Minion(range)
 		for i = 1, objManager.maxObjects do
@@ -245,15 +289,31 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 		return myHero.range + 50
 	end
 --}
---{ On Gain buff Stuff
+--{ Buff Manager
     function OnGainBuff(unit,buff)
-        if unit.isMe and buff.name == KennenLightningRush 
-        then EActive = true end
+        -- Lightning Rush active
+        if unit.isMe and buff.name == "KennenLightningRush" then EActive = true end
+        -- Mark gained
+       	for i = 1, heroManager.iCount do
+       		local hero = heroManager:GetHero(i)
+       		if ValidTarget(hero) and GetDistance(myHero,hero) <= Kennen.Q["range"] then
+       			if unit == hero and buff.name == "kennenmarkofstorm" then 
+       				IsMarked = true
+       				break
+       			end
+       		end
+       	end
     end
     function OnLoseBuff(unit,buff)
-        if unit.isMe and buff.name == KennenLightningRush 
-        then EActive = false end
+        -- Lightning Rush ended
+        if unit.isMe and buff.name == KennenLightningRush then EActive = false end
+        -- Mark lost
+        for i = 1, heroManager.iCount do
+       		local hero = heroManager:GetHero(i)
+   			if unit == hero and buff.name == "kennenmarkofstorm" then 
+   				IsMarked = false
+   				break
+       		end
+       	end
     end
---}}
-
-
+--}
