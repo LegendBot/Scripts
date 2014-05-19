@@ -1,4 +1,4 @@
-local version = 0.003
+local version = 0.004
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -15,8 +15,14 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
 			return true
 		end
+		if FileExist(LIB_PATH.."Selector.lua") then
+			require 'Selector' --[[Loads the Selector library from your Common folder]]
+		else
+			printMessage("Downloading Selector, please wait whilst the required library is being downloaded.")
+			DownloadFile("http://bit.ly/bol_selector_new",LIB_PATH.."Selector.lua", function() printMessage("Selector successfully downloaded, please reload (double [F9]).") end)
+			return true --[[Stops the script after downloading Selector from an online directory]]
+		end
 		local libDownloader = Require(scriptName)
-		libDownloader:Add("Selector",	 "bitbucket.org/BoLPain/bol-studio/raw/master/Scripts/Common/Selector.lua")
 		libDownloader:Add("VPrediction", "https://raw.githubusercontent.com/honda7/BoL/master/Common/VPrediction.lua")
 		libDownloader:Add("SOW",		 "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua")
 		libDownloader:Check()
@@ -31,7 +37,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --}
 --{ Initiate Data Load
 	local Kassadin = {
-		Q = {range = 600, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.7, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
+		Q = {range = 600, DamageType = _MAGIC, BaseDamage = 75, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.7, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
 		W = {range = myHero.range + 50, DamageType = _MAGIC, BaseDamage = 40, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.6, Extra = function() return (myHero:CanUseSpell(_W) == READY) end},
 		E = {range = 630, speed = math.huge, delay = 0.5, width = 150, collision = false, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.7, Extra = function() return (myHero:CanUseSpell(_E) == READY) end},
 		R = {range = 700, speed = math.huge, delay = 0.5, width = 270, collision = false, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0, Extra = function() return (myHero:CanUseSpell(_R) == READY) end}
@@ -41,12 +47,12 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 	function OnLoad()
 		--{ Variables
 			for i = 1, heroManager.iCount, 1 do
-	        	local enemy = heroManager:getHero(i)
-	      		if enemy.team ~= myHero.team and enemy.charName == "Blitzcrank" then
-	            	Blitzcrank = enemy
-	            	break
-	       		end
-	        end
+		        	local enemy = heroManager:getHero(i)
+		      		if enemy.team ~= myHero.team and enemy.charName == "Blitzcrank" then
+		            		Blitzcrank = enemy
+		            		break
+		       		end
+		        end
 			VP = VPrediction(true)
 			OW = SOW(VP)
 			OW:RegisterAfterAttackCallback(AutoAttackReset)
@@ -286,10 +292,9 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --}
 --{ Auto Attack Reset
 	function AutoAttackReset()
-		if Target and Combat then
-			if WREADY then
-				SpellW:Cast(Target)
-			end
+		if Target and Combat and WREADY then
+			SpellW:Cast(Target)
+			OW:resetAA()
 		end
 	end
 --}
