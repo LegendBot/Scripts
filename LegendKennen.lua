@@ -17,7 +17,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 		libDownloader:Add("SOW",		 "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua")
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
-		SourceUpdater(scriptName, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKennen.version"):CheckUpdate()
+	    SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKennen.version"):CheckUpdate()
 		return false
 	end
 	if Initiate() then return end
