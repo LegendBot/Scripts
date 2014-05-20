@@ -1,4 +1,4 @@
-local version = 0.005
+local version = 0.006
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -12,7 +12,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			require 'SourceLib'
 		else
 			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
+			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
 			return true
 		end
 		if FileExist(LIB_PATH.."Selector.lua") then
@@ -30,7 +30,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") 
 			return true 
 		end
-		SourceUpdater(scriptName, version, "raw.githubusercontent.com", "/LegendBot/Scripts/master/LegendKassadin.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME):CheckUpdate()
+		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKassadin.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME):CheckUpdate()
 		return false
 	end
 	if Initiate() then return end
@@ -90,7 +90,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			--}
 			--{ Target Selector			
 				Menu:addSubMenu("Kassadin: Target Selector","TS")
-				Menu.TS:addParam("TS","Target Selector",7,2,{ "AllClass", "SourceLib", "Selector", "SAC:Reborn (Broken?)", "MMA" })
+				Menu.TS:addParam("TS","Target Selector",7,2,{ "AllClass", "SourceLib", "Selector", "SAC:Reborn", "MMA" })
 				ts = TargetSelector(8,Kassadin.R["range"],1,false)
 				ts.name = "AllClass TS"
 				Menu.TS:addTS(ts)				
