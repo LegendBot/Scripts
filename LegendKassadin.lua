@@ -1,4 +1,4 @@
-local version = 0.004
+local version = 0.005
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -38,7 +38,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Data Load
 	local Kassadin = {
 		Q = {range = 600, DamageType = _MAGIC, BaseDamage = 75, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.7, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
-		W = {range = myHero.range + 50, DamageType = _MAGIC, BaseDamage = 40, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.6, Extra = function() return (myHero:CanUseSpell(_W) == READY) end},
+		W = {range = myHero.range + 100, DamageType = _MAGIC, BaseDamage = 40, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.6, Extra = function() return (myHero:CanUseSpell(_W) == READY) end},
 		E = {range = 630, speed = math.huge, delay = 0.5, width = 150, collision = false, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 25, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.7, Extra = function() return (myHero:CanUseSpell(_E) == READY) end},
 		R = {range = 700, speed = math.huge, delay = 0.5, width = 270, collision = false, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0, Extra = function() return (myHero:CanUseSpell(_R) == READY) end}
 	}
@@ -47,12 +47,12 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 	function OnLoad()
 		--{ Variables
 			for i = 1, heroManager.iCount, 1 do
-		        	local enemy = heroManager:getHero(i)
-		      		if enemy.team ~= myHero.team and enemy.charName == "Blitzcrank" then
-		            		Blitzcrank = enemy
-		            		break
-		       		end
-		        end
+				local enemy = heroManager:getHero(i)
+				if enemy.team ~= myHero.team and enemy.charName == "Blitzcrank" then
+					Blitzcrank = enemy
+					break
+				end
+			end
 			VP = VPrediction(true)
 			OW = SOW(VP)
 			OW:RegisterAfterAttackCallback(AutoAttackReset)
@@ -120,6 +120,12 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 				Menu.Farm:addParam("Q","Use Q in 'Farm'",1,true)
 				Menu.Farm:addParam("E","Use E in 'Farm'",1,false)
 			--}
+			--{ Kill Steal Settings
+				Menu:addSubMenu("Kassadin: Kill Steal","KS")
+				Menu.KS:addParam("Mana","Minimum Mana Percentage",4,70,0,100,0)
+				Menu.KS:addParam("Q","Use Q to Kill Steal",1,true)
+				Menu.KS:addParam("E","Use E to Kill Steal",1,true)
+			--}
 			--{ Extra Settings
 				Menu:addSubMenu("Kassadin: Extra","Extra")
 				Menu.Extra:addParam("Tick","Tick Suppressor (Tick Delay)",4,20,1,50,0)
@@ -127,6 +133,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 				Menu.Extra:addParam("SafeR","Only Rift Walk Target in Mouse Range",1,true)
 				Menu.Extra:addParam("StackR","Maximum Rift Walk Stacks",7,3,{ "One Stack", "Two Stacks", "Three Stacks", "Four Stacks", "Unlimited"})
 				Menu.Extra:addParam("WEPROC","Activate E with W",1,true)
+				Menu.Extra:addParam("WReset","Reset AA with W",1,true)
 			--}
 			--{ Draw Settings
 				Menu:addSubMenu("Kassadin: Draw","Draw")
@@ -173,16 +180,24 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 				if Menu.Perma.FM then Menu.Farm:permaShow("Mana") end
 				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
 				if Menu.Perma.FE then Menu.Farm:permaShow("E") end
+				Menu.Perma:addParam("KM","Perma Show > 'Kill Steal > Mana'",1,false)
+				Menu.Perma:addParam("KQ","Perma Show > 'Kill Steal > Q'",1,false)
+				Menu.Perma:addParam("KE","Perma Show > 'Kill Steal > E'",1,false)
+				if Menu.Perma.KM then Menu.KS:permaShow("Mana") end
+				if Menu.Perma.KQ then Menu.KS:permaShow("Q") end
+				if Menu.Perma.KE then Menu.KS:permaShow("E") end
 				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
 				Menu.Perma:addParam("EB","Perma Show 'Extra > Anti Blitzcrank'",1,false)
 				Menu.Perma:addParam("ER","Perma Show 'Extra > Safe Rift Walk'",1,false)
 				Menu.Perma:addParam("ES","Perma Show 'Extra > Rift Walk Stacks'",1,false)
-				Menu.Perma:addParam("EE","Perma Show 'Extra > Activate E with W'",1,false)	
+				Menu.Perma:addParam("EE","Perma Show 'Extra > Activate E with W'",1,false)
+				Menu.Perma:addParam("EW","Perma Show 'Extra > Reset AA with W'",1,false)
 				if Menu.Perma.ET then Menu.Extra:permaShow("Tick") end
 				if Menu.Perma.EB then Menu.Extra:permaShow("AntiBlitz") end
 				if Menu.Perma.ER then Menu.Extra:permaShow("SafeR") end
 				if Menu.Perma.ES then Menu.Extra:permaShow("StackR") end
 				if Menu.Perma.EE then Menu.Extra:permaShow("WEPROC") end
+				if Menu.Perma.EW then Menu.Extra:permaShow("WReset") end
 			--}
 		--}
 		printMessage("Loaded")
@@ -209,7 +224,10 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			Target = GrabTarget()			
 		--}	
 		--{ Combo and Harass
-			if Combat and Target then				
+			if Combat and Target then
+				if not Menu.Extra.WReset and WREADY and GetDistance(myHero,Target) <= Kassadin.W["range"] then
+					SpellW:Cast(Target)
+				end	
 				if DamageCalculator:IsKillable(Target,{_Q,_R,_E,_W,_AA,_AA}) then
 					if DamageCalculator:IsKillable(Target,{_Q}) and QREADY and myHero.mana >= QMANA then
 						SpellQ:Cast(Target)
@@ -217,49 +235,72 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 						SpellQ:Cast(Target)
 						SpellE:Cast(Target)
 					elseif DamageCalculator:IsKillable(Target,{_Q,_E,_R}) and QREADY and EREADY and RREADY and myHero.mana >= QMANA + EMANA + RMANA then
+						SpellQ:Cast(Target)
+						SpellE:Cast(Target)
 						if (Menu.Extra.SafeR and GetDistance(mousePos,Target) <= Kassadin.R["width"]) or not Menu.Extra.SafeR then
 							SpellR:Cast(Target)
 						end
-						SpellQ:Cast(Target)
-						SpellE:Cast(Target)
-					else
+					else						
+						if QREADY then
+							SpellQ:Cast(Target)
+						elseif EREADY then							
+							SpellE:Cast(Target)	
+						end
 						if RREADY then
 							if (Menu.Extra.SafeR and GetDistance(mousePos,Target) <= Kassadin.R["width"]) or not Menu.Extra.SafeR then
 								SpellR:Cast(Target)
 							end
 						end
-						if QREADY then
-							SpellQ:Cast(Target)
-						elseif EREADY then
-							SpellE:Cast(Target)	
-						end
 					end
-				else
-					if RREADY then
-						if (Menu.Extra.SafeR and GetDistance(mousePos,Target) <= Kassadin.R["width"]) or not Menu.Extra.SafeR then
-							SpellR:Cast(Target)
-						end					
-					end
+				else					
 					if QREADY then
 						SpellQ:Cast(Target)					
 					elseif EREADY then
 						SpellE:Cast(Target)
 					end
+					if RREADY then
+						if (Menu.Extra.SafeR and GetDistance(mousePos,Target) <= Kassadin.R["width"]) or not Menu.Extra.SafeR then
+							SpellR:Cast(Target)
+						end					
+					end
 				end
 				if Menu.Orbwalking.Enabled and (Menu.Orbwalking.Mode0 or Menu.Orbwalking.Mode1) then
 					OW:ForceTarget(Target)
-				end
+				end				
 			end
 		--}
 		--{ Farming
 			if Farm then
 				EnemyMinions:update()
 				for i, Minion in pairs(EnemyMinions.objects) do
-					if Minion then
+					if ValidTarget(Minion) then
 						if EREADY and DamageCalculator:IsKillable(Minion,{_E}) then
 							SpellE:Cast(Minion)
 						elseif QREADY and DamageCalculator:IsKillable(Minion,{_Q}) then
 							SpellQ:Cast(Minion)
+						end
+					end
+				end
+			end
+		--}
+		--{	Kill Steal
+			if myHero.mana / myHero.maxMana * 100 >= Menu.KS.Mana then
+				for i = 1, heroManager.iCount do
+					local hero = heroManager:GetHero(i)
+					if ValidTarget(hero) then
+						if Menu.KS.E and Menu.KS.Q and SpellQ:IsReady() and SpellE:IsReady() and GetDistance(myHero,hero) <= Kassadin.Q["range"] and DamageCalculator:IsKillable(hero,{_Q,_E}) then
+							if DamageCalculator:IsKillable(hero,{_E}) then
+								SpellE:Cast(hero)
+							elseif DamageCalculator:IsKillable(hero,{_Q}) then
+								SpellQ:Cast(hero)
+							else								
+								SpellQ:Cast(hero)
+								SpellE:Cast(hero)
+							end
+						elseif Menu.KS.E and SpellE:IsReady() and GetDistance(myHero,hero) <= Kassadin.E["range"] and DamageCalculator:IsKillable(hero,{_E}) then
+							SpellE:Cast(hero)
+						elseif Menu.KS.Q and SpellQ:IsReady() and GetDistance(myHero,hero) <= Kassadin.Q["range"] and DamageCalculator:IsKillable(hero,{_Q}) then
+							SpellQ:Cast(hero)
 						end
 					end
 				end
@@ -292,7 +333,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --}
 --{ Auto Attack Reset
 	function AutoAttackReset()
-		if Target and Combat and WREADY then
+		if Menu.Extra.WReset and Target and Combat and WREADY then
 			SpellW:Cast(Target)
 			OW:resetAA()
 		end
@@ -329,7 +370,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 		if WREADY then
 			return Kassadin.W["range"]
 		end
-		return myHero.range + 50
+		return myHero.range + 100
 	end
 --}
 --{ Rift Walk Stack Manager
@@ -362,12 +403,12 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Object Manager
 	function OnCreateObj(object)
 		if object ~= nil and object.name:find("FistGrab") then
-	        grab = object
+			grab = object
 		end
 	end
 	function OnDeleteObj(object)
 		if object ~= nil and object.name:find("FistGrab") then
-	        grab = nil
+			grab = nil
 		end
 	end
 --}
