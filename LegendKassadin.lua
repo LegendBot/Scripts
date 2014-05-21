@@ -1,4 +1,4 @@
-local version = 0.006
+local version = 0.007
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -23,8 +23,8 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			return true --[[Stops the script after downloading Selector from an online directory]]
 		end
 		local libDownloader = Require(scriptName)
-		libDownloader:Add("VPrediction", "https://raw.githubusercontent.com/honda7/BoL/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua")
+		libDownloader:Add("VPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
+		libDownloader:Add("SOW",		 "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then 
 			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") 
