@@ -54,8 +54,8 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 				E = {range = 400, speed = math.huge, delay = 0.25, width = 250, collision = false}
 			}			
 			SpellQ = Spell(_Q, Nidalee.Q["range"], true)
-			SpellW = Spell(_W, Nidalee.W["range"], true):SetSkillshot(VP, SKILLSHOT_CIRCULAR, Nidalee.W["range"], Nidalee.W["delay"], Nidalee.W["speed"], Nidalee.W["collision"]):SetHitChance(2) --[[SourceLib: Sets W casting as a skillshot]]
-			SpellE = Spell(_E, Nidalee.E["range"], true):SetSkillshot(VP, SKILLSHOT_CIRCULAR, Nidalee.E["range"], Nidalee.E["delay"], Nidalee.E["speed"], Nidalee.E["collision"]):SetHitChance(2) --[[SourceLib: Sets E casting as a skillshot]]
+			SpellW = Spell(_W, Nidalee.W["range"], false)
+			SpellE = Spell(_E, Nidalee.E["range"], false)
 			return false
 		end
 	end
@@ -227,7 +227,7 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and (NidaleeData() and Menu.Combo.HW) or (not NidaleeData() and Menu.Combo.CW)) or (Menu.General.Harass and (NidaleeData() and Menu.Harass.HW) or (not NidaleeData() and Menu.Combo.CW))))
 			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and not NidaleeData() and Menu.Combo.CE) or (Menu.General.Harass and not NidaleeData() and Menu.Harass.CE)))
 			Target = GrabTarget()
-			Ally = GrabAlly()
+			Ally = GrabAlly(Nidalee.E["range"])
 		--}
 		--{ Combo and Harass
 			if Combat and ValidTarget(Target) then
@@ -250,7 +250,7 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 					end
 				elseif not NidaleeData() and DamageCalculator:IsKillable(Target,{_CQ,_CW,_CE}) then
 					if DamageCalculator:IsKillable(Target,{_CE}) and EREADY then
-						if isFacing(myHero, Target, 200) then
+						if isFacing(myHero, Target, 200) and GetDistance(myHero,Target) <= Nidalee.E["range"] then
 							SpellE:Cast(Target)
 						end					
 					elseif DamageCalculator:IsKillable(Target,{_CW}) and WREADY then
@@ -259,13 +259,13 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 						end
 					elseif DamageCalculator:IsKillable(Target,{_CW,_CE}) and WREADY and EREADY then
 						if isFacing(myHero, Target, 200) then							
-							SpellE:Cast(Target)
+							if GetDistance(myHero,Target) <= Nidalee.E["range"] then SpellE:Cast(Target) end
 							SpellW:Cast(Target)
 						end
 					end
 				elseif not NidaleeData() then
 					if EREADY then
-						if isFacing(myHero, Target, 200) then
+						if isFacing(myHero, Target, 200) and GetDistance(myHero,Target) <= Nidalee.E["range"] then
 							SpellE:Cast(Target)
 						end
 					end
@@ -340,19 +340,19 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 	end
 --}
 --{ Ally Selector
-	function GrabAlly()
+	function GrabAlly(range)
 		if Menu.Heal.GAlly == 1 then
-			return LowestAlly()
+			return LowestAlly(range)
 		elseif Menu.Heal.GAlly == 2 then
-			return NearMouseAlly()
+			return NearMouseAlly(range)
 		elseif Menu.Heal.GAlly == 3 then
-			return PrioritizedAlly()
+			return PrioritizedAlly(range)
 		end
 	end
-	function LowestAlly()
+	function LowestAlly(range)
 		for i = 1, heroManager.iCount do
 			hero = heroManager:GetHero(i)
-			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= 900 then
+			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= range then
 				if heroTarget == nil then
 					heroTarget = hero
 				elseif hero.health/hero.maxHealth < heroTarget.health/heroTarget.maxHealth then
@@ -362,10 +362,10 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 		end
 		return heroTarget
 	end
-	function NearMouseAlly()
+	function NearMouseAlly(range)
 		for i = 1, heroManager.iCount do
 			hero = heroManager:GetHero(i)
-			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= 900 then
+			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= range then
 				if heroTarget == nil then
 					heroTarget = hero
 				elseif GetDistance(myHero,hero) < GetDistance(myHero,heroTarget) then
@@ -375,10 +375,10 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 		end
 		return heroTarget
 	end
-	function PrioritizedAlly()
+	function PrioritizedAlly(range)
 		for i = 1, heroManager.iCount do
 			hero = heroManager:GetHero(i)
-			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= 900 then
+			if hero.team == myHero.team and not hero.dead and GetDistance(myHero,hero) <= range then
 				if heroTarget == nil then
 					heroTarget = hero
 				elseif Menu.Heal.Priority[hero.charName] < Menu.Heal.Priority[heroTarget] then
