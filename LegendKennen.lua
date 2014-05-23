@@ -25,7 +25,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 --}
 --{ Initiate Data Load
 	local Kennen = {
-		Q = {range = 950, speed = 1700, delay = 0.7, width = 50, collision = true, DamageType = _MAGIC, BaseDamage = 75, DamagePerLevel = 40, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.75, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
+		Q = {range = 950, speed = 1700, delay = 0.7, width = 50, collision = true, DamageType = _MAGIC, BaseDamage = 55, DamagePerLevel = 40, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.75, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
 		W = {range = 900, speed = math.huge, delay = 0.5, DamageType = _MAGIC, BaseDamage = 65, DamagePerLevel = 30, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.55, Extra = function() return (myHero:CanUseSpell(_W) == READY) end},
 		E = {range = myHero.range + 50, DamageType = _MAGIC, BaseDamage = 85, DamagePerLevel = 40, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.6, Extra = function() return (myHero:CanUseSpell(_E) == READY) end},
 		R = {range = 550, speed = math.huge, delay = 0.5, collision = false, DamageType = _MAGIC, BaseDamage = 80, DamagePerLevel = 65, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = .4, Extra = function() return (myHero:CanUseSpell(_R) == READY) end}
@@ -45,6 +45,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			SpellW = Spell(_W, Kennen.W["range"])
 			SpellE = Spell(_E, Kennen.E["range"])
 			SpellR = Spell(_R, Kennen.R["range"])
+			EnemyMinions = minionManager(MINION_ENEMY, Kennen.Q["range"], myHero, MINION_SORT_MAXHEALTH_DEC)
 		--}
 		--{ DamageCalculator
 			DamageCalculator = DamageLib()
@@ -90,9 +91,8 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			--}
 			--{ Farm Settings
 				Menu:addSubMenu("Kennen: Farm","Farm")
+				Menu.Farm:addParam("Energy","Minimum Energy Percentage",4,70,0,100,0)
 				Menu.Farm:addParam("Q","Use Q in 'Farm'",1,true)
-				Menu.Farm:addParam("W","Use W in 'Farm'",1,false)
-				Menu.Farm:addParam("E","Use E in 'Farm'",1,false)
 			--}
 			--{ Extra Settings
 				Menu:addSubMenu("Kennen: Extra","Extra")
@@ -133,10 +133,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 				if Menu.Perma.HE then Menu.Harass:permaShow("E") end
 				if Menu.Perma.HR then Menu.Harass:permaShow("R") end
 				Menu.Perma:addParam("FQ","Perma Show 'Farm > Q'",1,false)
-				Menu.Perma:addParam("FE","Perma Show 'Farm > E'",1,false)
 				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
-				if Menu.Perma.FQ then Menu.Farm:permaShow("W") end
-				if Menu.Perma.FE then Menu.Farm:permaShow("E") end
 				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
 				if Menu.Perma.ET then Menu.Extra:permaShow("Tick") end
 			--}
@@ -154,6 +151,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			WMANA = GetSpellData(_W).mana
 			EMANA = GetSpellData(_E).mana
 			RMANA = GetSpellData(_R).mana
+			Farm = Menu.General.LastHit and Menu.Farm.Energy <= myHero.mana / myHero.maxMana * 100
 			Combat = Menu.General.Combo or Menu.General.Harass
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
 			WREADY = IsMarked and (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
@@ -216,33 +214,19 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 		--}
 		--{ Farming
 			if Farm then
-				local iMinion = Minion(Kassadin.Q["range"])
-				if iMinion then
-					if QREADY and DamageCalculator:IsKillable(iMinion,{_Q}) then
-						SpellQ:Cast(iMinion)
-					elseif WREADY and DamageCalculator:IsKillable(iMinion,{_W}) then
-						SpellE:Cast(iMinion)
+				EnemyMinions:update()
+				for i, Minion in pairs(EnemyMinions.objects) do
+					if ValidTarget(Minion) then
+						if QREADY and DamageCalculator:IsKillable(Minion,{_Q}) then
+							SpellQ:Cast(Minion)
+						end
 					end
 				end
 			end
 		--}
 	end
 --}
---{ Minion Selector
-	function Minion(range)
-		for i = 1, objManager.maxObjects do
-			local obj = objManager:GetObject(i)
-			if obj ~= nil and obj.name:find("Minion") and ValidTarget(obj) and GetDistance(myHero,obj) <= range then
-				if iMinion == nil then
-					iMinion = obj
-				elseif iMinion.health > obj.health then
-					iMinion = obj
-				end
-			end
-		end
-		return iMinion
-	end
---}
+
 --{ Target Selector
 	function GrabTarget()
 		if _G.MMA_Loaded and Menu.TS.TS == 5 then
