@@ -30,7 +30,7 @@ if not VIP_USER or myHero.charName ~= "Nidalee" then return end --[[Disables the
 			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.")
 			return true --[[Stops the script after downloading the required files]]
 		end
-		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendNidalee.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/LegendNidalee.version"):CheckUpdate()
+		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendNidalee.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendNidalee.version"):CheckUpdate()
 		return false
 	end
 	if Initiate() then return end --[[Initates the function above and stops the script if required]]
