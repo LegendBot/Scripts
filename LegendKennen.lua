@@ -1,4 +1,4 @@
-local version = 1.001
+local version = 0.002
 if not VIP_USER or myHero.charName ~= "Kennen" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -97,6 +97,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			--{ Extra Settings
 				Menu:addSubMenu("Kennen: Extra","Extra")
 				Menu.Extra:addParam("Tick","Tick Suppressor (Tick Delay)",4,20,1,50,0)
+				Menu.Extra:addParam("RCount","Enemies in range to Ulti",7,2,{"One Enemy","Two Enemies","Three Enemies","Four Enemies","Five Enemies"})
 			--}
 			--{ Draw Settings
 				Menu:addSubMenu("Kennen: Draw","Draw")
@@ -135,7 +136,9 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 				Menu.Perma:addParam("FQ","Perma Show 'Farm > Q'",1,false)
 				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
 				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
+				Menu.Perma:addParam("ER","Perma Show 'Extra > R Count'",1,false)
 				if Menu.Perma.ET then Menu.Extra:permaShow("Tick") end
+				if Menu.Perma.ER then Menu.Extra:permaShow("RCount") end
 			--}
 		--}
 	end
@@ -156,7 +159,7 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
 			WREADY = IsMarked and (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
 			EREADY = not EActive and (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
-			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ))
+			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= CountEnemyHeroInRange(Kennen.R["range"], myHero))
 			Target = GrabTarget()
 		--}	
 		--{ Combo and Harass
@@ -285,9 +288,9 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
         -- Mark lost
         for i = 1, heroManager.iCount do
        		local hero = heroManager:GetHero(i)
-   			if unit == hero and buff.name == "kennenmarkofstorm" then 
-   				IsMarked = false
-   				break
+   		if unit == hero and buff.name == "kennenmarkofstorm" then 
+   			IsMarked = false
+   			break
        		end
        	end
     end
