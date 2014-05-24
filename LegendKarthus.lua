@@ -25,10 +25,10 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --}
 --{ Initiate Data Load
 	local Karthus = {
-		Q = {range = 875, speed = 20, delay = 0.5, width = 100, collision = false, DamageType = _MAGIC, BaseDamage = 40, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.30, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
+		Q = {range = 875, speed = 1700, delay = 0.5, width = 100, collision = false, DamageType = _MAGIC, BaseDamage = 40, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.30, Extra = function() return (myHero:CanUseSpell(_Q) == READY) end},
 		W = {range = 1000, speed = 1600, delay = 0.5, width = 450, collision = false, DamageType = _MAGIC, BaseDamage = 0, DamagePerLevel = 0, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.0, Extra = function() return (myHero:CanUseSpell(_W) == READY) end},
 		E = {range = 550, speed = 1000, delay = 0.5, collision = false, DamageType = _MAGIC, BaseDamage = 30, DamagePerLevel = 20, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = 0.2, Extra = function() return (myHero:CanUseSpell(_E) == READY) end},
-		R = {range = math.huge, speed = math.huge, delay = 3.0, DamageType = _MAGIC, BaseDamage = 250, DamagePerLevel = 150, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = .6, Extra = function() return (myHero:CanUseSpell(_R) == READY) end}
+		R = {range = math.huge, speed = math.huge, delay = 3.0, DamageType = _MAGIC, BaseDamage = 150, DamagePerLevel = 100, ScalingStat = _MAGIC, PercentScaling = _AP, Condition = .6, Extra = function() return (myHero:CanUseSpell(_R) == READY) end}
 	}
 --}
 --{ Script Load
@@ -40,7 +40,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			TS = SimpleTS(STS_LESS_CAST_MAGIC)
 			Selector.Instance()
 			SpellQ = Spell(_Q, Karthus.Q["range"]):SetSkillshot(VP, SKILLSHOT_CIRCULAR, Karthus.Q["width"], Karthus.Q["delay"], Karthus.Q["speed"], Karthus.Q["collision"])
-			SpellW = Spell(_W, Karthus.W["range"]):SetSkillshot(VP, SKILLSHOT_CIRCULAR, Karthus.Q["width"], Karthus.Q["delay"], Karthus.Q["speed"], Karthus.Q["collision"])
+			SpellW = Spell(_W, Karthus.W["range"]):SetSkillshot(VP, SKILLSHOT_LINEAR, Karthus.Q["width"], Karthus.Q["delay"], Karthus.Q["speed"], Karthus.Q["collision"])
 			SpellE = Spell(_E, Karthus.E["range"])
 			SpellR = Spell(_R, Karthus.R["range"])
 			EnemyMinions = minionManager(MINION_ENEMY, Karthus.Q["range"], myHero, MINION_SORT_MAXHEALTH_DEC)
@@ -152,8 +152,8 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			Farm = Menu.General.LastHit and Menu.Farm.Energy <= myHero.mana / myHero.maxMana * 100
 			Combat = Menu.General.Combo or Menu.General.Harass
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
-			WREADY = IsMarked and (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) or (Farm and Menu.Farm.W) ))
-			EREADY = not EActive and (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
+			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) ))
+			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
 			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= CountEnemyHeroInRange(Karthus.R["range"], myHero))
 			Target = GrabTarget()
 		--}	
@@ -162,6 +162,8 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				if DamageCalculator:IsKillable(Target,{_Q,_E,_W,_R,_AA}) then
 					if DamageCalculator:IsKillable(Target,{_Q}) and QREADY then
 						SpellQ:Cast(Target) 
+					elseif DamageCalculator:IsKillable(Target,{_R}) and RREADY then
+						SpellR:Cast(Target) 
 					elseif DamageCalculator:IsKillable(Target,{_Q,_W}) and QREADY and WREADY then
 						SpellQ:Cast(Target) 
 						SpellW:Cast(Target)
@@ -186,9 +188,6 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 						if EREADY then
 							SpellE:Cast(Target)
 						end
-						if RREADY then
-							SpellR:Cast(Target)
-						end
 					end
 				else
 					if QREADY then
@@ -199,9 +198,6 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 					end
 					if EREADY then
 						SpellE:Cast(Target)
-					end
-					if RREADY then
-						SpellR:Cast(Target)
 					end
 				end
 				if Menu.Orbwalking.Enabled and (Menu.Orbwalking.Mode0 or Menu.Orbwalking.Mode1) then
