@@ -1,7 +1,7 @@
 local version = "1.129"
 local AUTOUPDATE = false
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/honda7/BoL/master/Common/SOW.lua".."?rand="..math.random(1,10000)
+local UPDATE_PATH = "/LegendBot/Scripts/master/Common/SOW.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = LIB_PATH.."SOW.lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
