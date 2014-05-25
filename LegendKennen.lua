@@ -1,4 +1,4 @@
-local version = 0.002
+local version = 0.003
 if not VIP_USER or myHero.charName ~= "Kennen" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -8,13 +8,13 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
 			require 'SourceLib'
 		else
 			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
+			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
 			return true
 		end
 		local libDownloader = Require(scriptName)
 		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Selector.lua")
-		libDownloader:Add("VPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
+		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
+		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
 	    SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKennen.version"):CheckUpdate()
@@ -288,9 +288,9 @@ if not VIP_USER or myHero.charName ~= "Kennen" then return end
         -- Mark lost
         for i = 1, heroManager.iCount do
        		local hero = heroManager:GetHero(i)
-   		if unit == hero and buff.name == "kennenmarkofstorm" then 
-   			IsMarked = false
-   			break
+   			if unit == hero and buff.name == "kennenmarkofstorm" then 
+   				IsMarked = false
+   				break
        		end
        	end
     end
