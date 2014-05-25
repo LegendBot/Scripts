@@ -1,6 +1,6 @@
 -- Change autoUpdate to false if you wish to not receive auto updates.
 -- Change silentUpdate to true if you wish not to receive any message regarding updates
-local autoUpdate   = true
+local autoUpdate   = false
 local silentUpdate = false
 
 local version = 1.058
@@ -2897,7 +2897,7 @@ end
 
 -- Update script
 if autoUpdate then
-    SourceUpdater("SourceLib", version, "raw.github.com", "/TheRealSource/public/master/common/SourceLib.lua", LIB_PATH .. "SourceLib.lua", "/TheRealSource/public/master/common/SourceLib.version"):SetSilent(silentUpdate):CheckUpdate()
+    SourceUpdater("SourceLib", version, "raw.github.com", "/LegendBot/Scripts/master/Common/SourceLib.lua", LIB_PATH .. "SourceLib.lua", "/TheRealSource/public/master/common/SourceLib.version"):SetSilent(silentUpdate):CheckUpdate()
 end
 
 -- Set enemy bar data
