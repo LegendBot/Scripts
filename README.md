@@ -1,8 +1,8 @@
 LegendSeries by;
 ================
 
-**- [Pain][1]** 
-**- [Turtlebot][2]**
+** [Pain][1]** 
+** [Turtlebot][2]**
 
 Instructions;
 =============
@@ -14,17 +14,17 @@ Instructions;
 Scripts;
 =======
 
- **- [LegendKassadin][3]** ([Thread Link][4])
- **- [LegendKennen][5]** ([Thread Link][6])
+ ** [LegendKassadin][3]** ([Thread Link][4])
+ ** [LegendKennen][5]** ([Thread Link][6])
  
 
 Libraries;
 =========
 
- **- [SOW][7]**
- **- [Selector][8]**
- **- [SourceLib][9]** 
- **- [VPrediction][10]**
+ ** [SOW][7]**
+ ** [Selector][8]**
+ ** [SourceLib][9]** 
+ ** [VPrediction][10]**
 
 
   [1]: http://botoflegends.com/forum/user/2005-
