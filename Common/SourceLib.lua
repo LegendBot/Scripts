@@ -2897,7 +2897,7 @@ end
 
 -- Update script
 if autoUpdate then
-    SourceUpdater("SourceLib", version, "raw.github.com", "/LegendBot/Scripts/master/Common/SourceLib.lua", LIB_PATH .. "SourceLib.lua", "/TheRealSource/public/master/common/SourceLib.version"):SetSilent(silentUpdate):CheckUpdate()
+    SourceUpdater("SourceLib", version, "raw.github.com", "/LegendBot/Scripts/master/Common/SourceLib.lua", LIB_PATH .. "SourceLib.lua", "/LegendBot/Scripts/master/Common/Versions/SourceLib.version"):SetSilent(silentUpdate):CheckUpdate()
 end
 
 -- Set enemy bar data
