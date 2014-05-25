@@ -8,7 +8,7 @@ local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
 function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>VPrediction:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
 if AUTOUPDATE then
-	local ServerData = GetWebResult(UPDATE_HOST, "/honda7/BoL/master/VersionFiles/vPrediction.version")
+	local ServerData = GetWebResult(UPDATE_HOST, "/LegendBot/Scripts/master/Common/Versions/VPrediction.version")
 	if ServerData then
 		ServerVersion = type(tonumber(ServerData)) == "number" and tonumber(ServerData) or nil
 		if ServerVersion then
