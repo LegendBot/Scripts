@@ -1,4 +1,4 @@
-local version = 0.007
+local version = 0.008
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -15,16 +15,10 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
 			return true
 		end
-		if FileExist(LIB_PATH.."Selector.lua") then
-			require 'Selector' --[[Loads the Selector library from your Common folder]]
-		else
-			printMessage("Downloading Selector, please wait whilst the required library is being downloaded.")
-			DownloadFile("http://bit.ly/bol_selector_new",LIB_PATH.."Selector.lua", function() printMessage("Selector successfully downloaded, please reload (double [F9]).") end)
-			return true --[[Stops the script after downloading Selector from an online directory]]
-		end
 		local libDownloader = Require(scriptName)
-		libDownloader:Add("VPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
+		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
+		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
+		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Selector.lua")
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then 
 			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") 
