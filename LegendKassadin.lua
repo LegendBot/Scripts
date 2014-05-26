@@ -1,4 +1,4 @@
-local version = 0.008
+local version = 0.009
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -16,15 +16,15 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			return true
 		end
 		local libDownloader = Require(scriptName)
+		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua")
 		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
-		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Selector.lua")
+		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")		
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then 
 			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") 
 			return true 
 		end
-		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKassadin.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME):CheckUpdate()
+		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKassadin.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, /LegendBot/Scripts/master/LegendKassadin.lua):CheckUpdate()
 		return false
 	end
 	if Initiate() then return end
