@@ -1,4 +1,4 @@
-local version = 0.003
+local version = 0.004
 if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -59,8 +59,9 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			--{ General/Key Bindings
 				Menu:addSubMenu("Karthus: General","General")
 				Menu.General:addParam("Combo","Combo",2,false,32)
-				Menu.General:addParam("Harass","Harass",2,false,string.byte("C"))
+				Menu.General:addParam("Harass","Harass (Mixed Mode)",2,false,string.byte("C"))
 				Menu.General:addParam("LastHit","Last Hit Creeps",2,false,string.byte("X"))
+				Menu.General:addParam("LaneClear","Lane Clear",2,false,string.byte("V"))
 			--}
 			--{ Target Selector			
 				Menu:addSubMenu("Karthus: Target Selector","TS")
@@ -79,23 +80,26 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				Menu.Combo:addParam("Q","Use Q in 'Combo'",1,true)
 				Menu.Combo:addParam("W","Use W in 'Combo'",1,true)
 				Menu.Combo:addParam("E","Use E in 'Combo'",1,true)
-				Menu.Combo:addParam("R","Use R in 'Combo'",1,true)
+				Menu.Combo:addParam("R", "Use R in'Combo'",3, true, GetKey("G"))
 			--}
 			--{ Harass Settings
-				Menu:addSubMenu("Karthus: Harass","Harass")
+				Menu:addSubMenu("Karthus: Harass (Mixed Mode)","Harass")
 				Menu.Harass:addParam("Q","Use Q in 'Harass'",1,true)
+				Menu.Harass:addParam("Qfarm","Farm Q in 'Harass'",1,true) 
 				Menu.Harass:addParam("W","Use W in 'Harass'",1,true)
 				Menu.Harass:addParam("E","Use E in 'Harass'",1,false)
 			--}
 			--{ Farm Settings
 				Menu:addSubMenu("Karthus: Farm","Farm")
-				Menu.Farm:addParam("Energy","Minimum Energy Percentage",4,70,0,100,0)
+				Menu.Farm:addParam("Mana","Minimum Mana Percentage",4,70,0,100,0)
 				Menu.Farm:addParam("Q","Use Q in 'Farm'",1,true)
+				Menu.Farm:addParam("Qclear","Use Q in 'Lane Clear'",1,true)
 			--}
 			--{ Extra Settings
 				Menu:addSubMenu("Karthus: Extra","Extra")
 				Menu.Extra:addParam("Tick","Tick Suppressor (Tick Delay)",4,20,1,50,0)
 				Menu.Extra:addParam("RCount","Enemies to Kill w/ Ulti",7,2,{"One Enemy","Two Enemies","Three Enemies","Four Enemies","Five Enemies"})
+                Menu.Extra:addParam("Notify","Ping when enemy can be Requiem'd",1,true)
 			--}
 			--{ Draw Settings
 				Menu:addSubMenu("Karthus: Draw","Draw")
@@ -103,9 +107,12 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				DrawHandler:CreateCircle(myHero,Karthus.Q["range"],1,{255, 255, 255, 255}):AddToMenu(Menu.Draw, "Q Range", true, true, true):LinkWithSpell(SpellQ, true)
 				DrawHandler:CreateCircle(myHero,Karthus.W["range"],1,{255, 255, 255, 255}):AddToMenu(Menu.Draw, "W Range", true, true, true):LinkWithSpell(SpellW, true)
 				DrawHandler:CreateCircle(myHero,Karthus.E["range"],1,{255, 255, 255, 255}):AddToMenu(Menu.Draw, "E Range", true, true, true):LinkWithSpell(SpellE, true)
+				Menu.Draw:addSubMenu("Karthus R","Ulti")
+				Menu.Draw.Ulti:addParam("X","X position for Text",4,50,0,WINDOW_W,0)
+				Menu.Draw.Ulti:addParam("Y","Y position for Text",4,50,0,WINDOW_H,0)
 				DamageCalculator:AddToMenu(Menu.Draw,{_Q,_W,_E,_R,_AA})
 			--}
-						--{ Perma Show Settings
+			--{ Perma Show Settings
 				Menu:addSubMenu("Karthus: Perma Show","Perma")
 				Menu.Perma:addParam("INFO","The following options require a restart [F9 x2] to take effect",5,"")
 				Menu.Perma:addParam("GC","Perma Show 'General > Combo'",1,true)				
@@ -123,17 +130,23 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				if Menu.Perma.CE then Menu.Combo:permaShow("E") end
 				if Menu.Perma.CR then Menu.Combo:permaShow("R") end
 				Menu.Perma:addParam("HQ","Perma Show 'Harass > Q'",1,false)
+				Menu.Perma:addParam("HF","Perma Show 'Harass > Qfarm'",1,false)
 				Menu.Perma:addParam("HW","Perma Show 'Harass > W'",1,false)
 				Menu.Perma:addParam("HE","Perma Show 'Harass > E'",1,false)
 				if Menu.Perma.HQ then Menu.Harass:permaShow("Q") end
+				if Menu.Perma.HF then Menu.Harass:permaShow("Qfarm") end
 				if Menu.Perma.HW then Menu.Harass:permaShow("W") end
 				if Menu.Perma.HE then Menu.Harass:permaShow("E") end
 				Menu.Perma:addParam("FQ","Perma Show 'Farm > Q'",1,false)
+				Menu.Perma:addParam("FC","Perma Show 'Farm > Qclear'",1,false)
 				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
+				if Menu.Perma.FC then Menu.Farm:permaShow("Qclear") end
 				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
 				Menu.Perma:addParam("ER","Perma Show 'Extra > R Count'",1,false)
+				Menu.Perma:addParam("EN","Perma Show 'Extra > Notify'",1,false)
 				if Menu.Perma.ET then Menu.Extra:permaShow("Tick") end
 				if Menu.Perma.ER then Menu.Extra:permaShow("RCount") end
+				if Menu.Perma.EN then Menu.Extra:permaShow("Notify") end
 			--}
 		--}
 	end
@@ -149,9 +162,9 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			WMANA = GetSpellData(_W).mana
 			EMANA = GetSpellData(_E).mana
 			RMANA = GetSpellData(_R).mana
-			Farm = Menu.General.LastHit and Menu.Farm.Energy <= myHero.mana / myHero.maxMana * 100
+			Farm = (Menu.General.LastHit or Menu.General.LaneClear) and Menu.Farm.Mana <= myHero.mana / myHero.maxMana * 100
 			Combat = Menu.General.Combo or Menu.General.Harass
-			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
+			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and (Menu.Farm.Q or Menu.Farm.Qclear)) ))
 			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) ))
 			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
 			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= RCountEnemyHeroInRange(Karthus.R["range"], myHero))
@@ -177,12 +190,12 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 						elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E}) and QREADY and WREADY and EREADY then
 					    	SpellQ:Cast(Target) 
 						    SpellW:Cast(Target)
-							SpellE:Cast(Target)
+							if myHero:GetSpellData(_E).toggleState == 1 then SpellE:Cast(Target) end
 							--
 						elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E,_R}) and QREADY and WREADY and RREADY then
 					    	SpellQ:Cast(Target) 
 						    SpellW:Cast(Target)
-						    SpellE:Cast(Target)
+						    if myHero:GetSpellData(_E).toggleState == 1 then SpellE:Cast(Target) end
 							SpellR:Cast(Target)
 						else
 							if QREADY then
@@ -192,7 +205,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 								SpellW:Cast(Target)
 							end
 							if EREADY then
-								SpellE:Cast(Target)
+								if myHero:GetSpellData(_E).toggleState == 1 then SpellE:Cast(Target) end
 							end
 						end
 					else
@@ -203,7 +216,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 							SpellW:Cast(Target)
 						end
 						if EREADY then
-							SpellE:Cast(Target)
+							if myHero:GetSpellData(_E).toggleState == 1 then SpellE:Cast(Target) end
 						end
 					end
 					if Menu.Orbwalking.Enabled and (Menu.Orbwalking.Mode0 or Menu.Orbwalking.Mode1) then
@@ -211,22 +224,53 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 					end
 				end
 			end
-		--}		
+		--}	
+		--{ Mixed Mode
+		    if Menu.General.Harass and not Target then
+				if Menu.Harass.Qfarm and SpellQ:IsReady() then
+	    			EnemyMinions:update()
+					for i, Minion in pairs(EnemyMinions.objects) do
+						if ValidTarget(Minion) and GetDistance(myHero,Minion) <= Karthus.Q["range"] then
+							if DamageCalculator:IsKillable(Minion,{_Q}) then
+								SpellQ:Cast(Minion)
+							end
+						end
+					end
+    			end
+		    end
+		--}
 		--{ Farming
 			if Farm then
 				EnemyMinions:update()
 				for i, Minion in pairs(EnemyMinions.objects) do
 					if ValidTarget(Minion) then
-						if QREADY and DamageCalculator:IsKillable(Minion,{_Q}) then
+						if QREADY and (DamageCalculator:IsKillable(Minion,{_Q}) or Menu.General.LaneClear) then
 							SpellQ:Cast(Minion)
 						end
 					end
 				end
 			end
 		--}
+		if GetTickCount() > (PingTick or 0) then
+			PingTick = GetTickCount() + 500
+			if Menu.Extra.Notify then
+				for i = 1, heroManager.iCount, 1 do
+					local hero = heroManager:getHero(i)
+					if ValidTarget(hero) and DamageCalculator:IsKillable(hero,{_R}) then
+						if PingOnce ~= true then
+							PingSignal(PING_ALERT,hero.x,hero.y,hero.z,2) 
+							PingOnce = true
+							DelayAction(function() PingOnce = false end, 5)
+						end
+					end
+				end
+			end
+		end
 	end
 --}
-
+	function OnDraw()
+		DrawText(RCountEnemyHeroInRange(Karthus.R["range"],myHero).." players can by killed by Requiem.",15,Menu.Draw.Ulti.X,Menu.Draw.Ulti.Y,ARGB(255,1,255,74))
+	end
 --{ Target Selector
 	function GrabTarget()
 		if _G.MMA_Loaded and Menu.TS.TS == 5 then
@@ -246,17 +290,17 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --}
 --{ Target Selector Range
 	function MaxRange()
-		if QREADY then
-			return Karthus.Q["range"]
-		end
 		if WREADY then
 			return Karthus.W["range"]
 		end
-		if EREADY then
-			return Karthus.E["range"]
-		end		
+		if QREADY then
+			return Karthus.Q["range"]
+		end
 		if RREADY then
 			return Karthus.R["range"]
+		end	
+		if EREADY then
+			return Karthus.E["range"]
 		end
 		return myHero.range + 50
 	end
