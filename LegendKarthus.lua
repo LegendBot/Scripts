@@ -13,11 +13,11 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 		end
 		local libDownloader = Require(scriptName)
 		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Selector.lua")
-		libDownloader:Add("VPrediction", "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/honda7/BoL/master/Common/SOW.lua")
+		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
+		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
 		libDownloader:Check()
 		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
-	    SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKennen.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKarthus.version"):CheckUpdate()
+	    SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKarthus.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKarthus.version"):CheckUpdate()
 		return false
 	end
 	if Initiate() then return end
@@ -154,30 +154,47 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and Menu.Farm.Q) ))
 			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) ))
 			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
-			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= CountEnemyHeroInRange(Karthus.R["range"], myHero))
+			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= RCountEnemyHeroInRange(Karthus.R["range"], myHero))
 			Target = GrabTarget()
 		--}	
 		--{ Combo and Harass
-			if Combat and Target then				
-				if DamageCalculator:IsKillable(Target,{_Q,_E,_W,_R,_AA}) then
-					if DamageCalculator:IsKillable(Target,{_Q}) and QREADY then
-						SpellQ:Cast(Target) 
-					elseif DamageCalculator:IsKillable(Target,{_R}) and RREADY then
-						SpellR:Cast(Target) 
-					elseif DamageCalculator:IsKillable(Target,{_Q,_W}) and QREADY and WREADY then
-						SpellQ:Cast(Target) 
-						SpellW:Cast(Target)
-						--
-					elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E}) and QREADY and WREADY and EREADY then
-				    	SpellQ:Cast(Target) 
-					    SpellW:Cast(Target)
-						SpellE:Cast(Target)
-						--
-					elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E,_R}) and QREADY and WREADY and RREADY then
-				    	SpellQ:Cast(Target) 
-					    SpellW:Cast(Target)
-					    SpellE:Cast(Target)
-						SpellR:Cast(Target)
+			if Combat then
+				--{ Defile Manager
+					if myHero:GetSpellData(_E).toggleState == 2 and (not Target or (Target and GetDistance(myHero,Target) >= Karthus.E["range"])) then
+						CastSpell(_E)
+					end
+				--}
+				if Target then
+					if DamageCalculator:IsKillable(Target,{_Q,_E,_W,_R,_AA}) then
+						if DamageCalculator:IsKillable(Target,{_Q}) and QREADY then
+							SpellQ:Cast(Target) 
+						elseif DamageCalculator:IsKillable(Target,{_R}) and RREADY then
+							SpellR:Cast(Target) 
+						elseif DamageCalculator:IsKillable(Target,{_Q,_W}) and QREADY and WREADY then
+							SpellQ:Cast(Target) 
+							SpellW:Cast(Target)
+							--
+						elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E}) and QREADY and WREADY and EREADY then
+					    	SpellQ:Cast(Target) 
+						    SpellW:Cast(Target)
+							SpellE:Cast(Target)
+							--
+						elseif DamageCalculator:IsKillable(Target,{_Q,_W,_E,_R}) and QREADY and WREADY and RREADY then
+					    	SpellQ:Cast(Target) 
+						    SpellW:Cast(Target)
+						    SpellE:Cast(Target)
+							SpellR:Cast(Target)
+						else
+							if QREADY then
+								SpellQ:Cast(Target) 
+							end
+							if WREADY then
+								SpellW:Cast(Target)
+							end
+							if EREADY then
+								SpellE:Cast(Target)
+							end
+						end
 					else
 						if QREADY then
 							SpellQ:Cast(Target) 
@@ -189,22 +206,12 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 							SpellE:Cast(Target)
 						end
 					end
-				else
-					if QREADY then
-						SpellQ:Cast(Target) 
+					if Menu.Orbwalking.Enabled and (Menu.Orbwalking.Mode0 or Menu.Orbwalking.Mode1) then
+						OW:ForceTarget(Target)
 					end
-					if WREADY then
-						SpellW:Cast(Target)
-					end
-					if EREADY then
-						SpellE:Cast(Target)
-					end
-				end
-				if Menu.Orbwalking.Enabled and (Menu.Orbwalking.Mode0 or Menu.Orbwalking.Mode1) then
-					OW:ForceTarget(Target)
 				end
 			end
-		--}
+		--}		
 		--{ Farming
 			if Farm then
 				EnemyMinions:update()
@@ -254,3 +261,15 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 		return myHero.range + 50
 	end
 --}
+function RCountEnemyHeroInRange(range, object)
+    object = object or myHero
+    range = range and range * range or myHero.range * myHero.range
+    local enemyInRange = 0
+    for i = 1, heroManager.iCount, 1 do
+        local hero = heroManager:getHero(i)
+        if ValidTarget(hero) and GetDistanceSqr(object, hero) <= range and DamageCalculator:IsKillable(hero,{_R}) then
+            enemyInRange = enemyInRange + 1
+        end
+    end
+    return enemyInRange
+end
