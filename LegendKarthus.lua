@@ -64,7 +64,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			--}
 			--{ Target Selector			
 				Menu:addSubMenu("Karthus: Target Selector","TS")
-				Menu.TS:addParam("TS","Target Selector",7,2,{ "AllClass", "SourceLib", "Selector (Disabled)", "SAC:Reborn", "MMA" })
+				Menu.TS:addParam("TS","Target Selector",7,2,{ "AllClass", "SourceLib", "Selector", "SAC:Reborn", "MMA" })
 				ts = TargetSelector(8,Karthus.R["range"],1,false)
 				ts.name = "AllClass TS"
 				Menu.TS:addTS(ts)				
