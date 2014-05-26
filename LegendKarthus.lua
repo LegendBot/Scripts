@@ -1,4 +1,4 @@
-local version = 0.002
+local version = 0.003
 if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
