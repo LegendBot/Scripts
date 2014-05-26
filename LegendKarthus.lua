@@ -1,4 +1,4 @@
-local version = 0.001
+local version = 0.002
 if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -8,7 +8,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			require 'SourceLib'
 		else
 			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
+			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
 			return true
 		end
 		local libDownloader = Require(scriptName)
