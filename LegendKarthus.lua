@@ -12,7 +12,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			return true
 		end
 		local libDownloader = Require(scriptName)
-		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Selector.lua")
+		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua")
 		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
 		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
 		libDownloader:Check()
