@@ -1,4 +1,4 @@
-local version = 0.004
+local version = 0.005
 if not VIP_USER or myHero.charName ~= "Karthus" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -44,6 +44,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			SpellE = Spell(_E, Karthus.E["range"])
 			SpellR = Spell(_R, Karthus.R["range"])
 			EnemyMinions = minionManager(MINION_ENEMY, Karthus.Q["range"], myHero, MINION_SORT_MAXHEALTH_DEC)
+			JungleMinions = minionManager(MINION_JUNGLE, Karthus.Q["range"], myHero, MINION_SORT_MAXHEALTH_DEC)
 		--}
 		--{ DamageCalculator
 			DamageCalculator = DamageLib()
@@ -62,6 +63,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				Menu.General:addParam("Harass","Harass (Mixed Mode)",2,false,string.byte("C"))
 				Menu.General:addParam("LastHit","Last Hit Creeps",2,false,string.byte("X"))
 				Menu.General:addParam("LaneClear","Lane Clear",2,false,string.byte("V"))
+				Menu.General:addParam("JungleFarm","Jungle Farm",2,false,string.byte("G"))
 			--}
 			--{ Target Selector			
 				Menu:addSubMenu("Karthus: Target Selector","TS")
@@ -95,6 +97,11 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				Menu.Farm:addParam("Q","Use Q in 'Farm'",1,true)
 				Menu.Farm:addParam("Qclear","Use Q in 'Lane Clear'",1,true)
 			--}
+			--{ Jungle Farm Settings
+				Menu:addSubMenu("Karthus: JungleFarm","JungleFarm")
+	    	    Menu.JungleFarm:addParam("JungleQ", "Jungle Q", SCRIPT_PARAM_ONOFF, true)
+	        	Menu.JungleFarm:addParam("JungleE", "Jungle E", SCRIPT_PARAM_ONOFF, false)
+	        	--}
 			--{ Extra Settings
 				Menu:addSubMenu("Karthus: Extra","Extra")
 				Menu.Extra:addParam("Tick","Tick Suppressor (Tick Delay)",4,20,1,50,0)
@@ -141,6 +148,10 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				Menu.Perma:addParam("FC","Perma Show 'Farm > Qclear'",1,false)
 				if Menu.Perma.FQ then Menu.Farm:permaShow("Q") end
 				if Menu.Perma.FC then Menu.Farm:permaShow("Qclear") end
+				Menu.Perma:addParam("JQ","Perma Show 'JungleFarm > JungleQ'",1,false)
+				Menu.Perma:addParam("JE","Perma Show 'JungleFarm > JungleE'",1,false)
+				if Menu.Perma.JQ then Menu.JungleFarm:permaShow("JungleQ") end
+				if Menu.Perma.JE then Menu.JungleFarm:permaShow("JungleE") end
 				Menu.Perma:addParam("ET","Perma Show 'Extra > Tick Delay'",1,false)
 				Menu.Perma:addParam("ER","Perma Show 'Extra > R Count'",1,false)
 				Menu.Perma:addParam("EN","Perma Show 'Extra > Notify'",1,false)
@@ -163,10 +174,11 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 			EMANA = GetSpellData(_E).mana
 			RMANA = GetSpellData(_R).mana
 			Farm = (Menu.General.LastHit or Menu.General.LaneClear) and Menu.Farm.Mana <= myHero.mana / myHero.maxMana * 100
+			JungleFarm = Menu.General.JungleFarm
 			Combat = Menu.General.Combo or Menu.General.Harass
-			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Farm and (Menu.Farm.Q or Menu.Farm.Qclear)) ))
+			QREADY = (SpellQ:IsReady() and ((Menu.General.Combo and Menu.Combo.Q) or (Menu.General.Harass and Menu.Harass.Q) or (Menu.General.JungleFarm and Menu.JungleFarm.JungleQ) or (Farm and (Menu.Farm.Q or Menu.Farm.Qclear)) ))
 			WREADY = (SpellW:IsReady() and ((Menu.General.Combo and Menu.Combo.W) or (Menu.General.Harass and Menu.Harass.W) ))
-			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
+			EREADY = (SpellE:IsReady() and ((Menu.General.Combo and Menu.Combo.E) or (Menu.General.JungleFarm and Menu.JungleFarm.JungleE) or (Menu.General.Harass and Menu.Harass.E) or (Farm and Menu.Farm.E) ))
 			RREADY = (SpellR:IsReady() and ((Menu.General.Combo and Menu.Combo.R) ) and Menu.Extra.RCount <= RCountEnemyHeroInRange(Karthus.R["range"], myHero))
 			Target = GrabTarget()
 		--}	
@@ -251,6 +263,20 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				end
 			end
 		--}
+		--{ Jungle Farming
+			if JungleFarm then
+				JungleMinions:update()
+					JungleCreep = JungleMinions.objects[1]
+					if ValidTarget(JungleCreep) then
+						if QREADY and EREADY then 
+							SpellQ:Cast(JungleCreep)
+							SpellE:Cast(JungleCreep)
+						elseif QREADY then
+							SpellQ:Cast(JungleCreep)
+						end
+					end
+				end
+		--}	
 		if GetTickCount() > (PingTick or 0) then
 			PingTick = GetTickCount() + 500
 			if Menu.Extra.Notify then
