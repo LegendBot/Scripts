@@ -1,4 +1,4 @@
-local version = 0.010
+local version = 0.011
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
@@ -200,7 +200,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 --{ Script Loop
 	function OnTick()
 		--{ Tick Manager
-			if GetTickCount() < (TickSuppressor or 0) then return end
+			if (GetTickCount() < (TickSuppressor or 0) or RECALL) then return end
 			TickSuppressor = GetTickCount() + Menu.Extra.Tick
 		--}
 		--{ Variables
@@ -319,7 +319,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			end
 		--}
 		--{ Activate E with W
-			if not RECALL and Menu.Extra.WEPROC and WEPROC then
+			if Menu.Extra.WEPROC and WEPROC then
 				CastSpell(_W)
 			end
 		--}
@@ -417,11 +417,4 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 			end
 		end
 	end)]]
---}
---{ Forever alone
-	AddLoadCallback(function()
-		if os.time() > os.time{year=2014, month=5, day=22, hour=0, sec=1} and os.time() < os.time{year=2014, month=5, day=23, hour=0, sec=1} then
-	    	printMessage("It's Pain's Birthday, wish him a happy birthday!")
-   		end
-   	end)
 --}
