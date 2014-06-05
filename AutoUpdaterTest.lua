@@ -16,7 +16,7 @@ local SCRIPT_UPDATER = {
 	["URL_VERSION"] = "/LegendBot/Scripts/master/Versions/AutoUpdaterTest.version"
 }
 local SCRIPT_LIBS = {
-	["SourceLib"] = "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua",
+	["SourceLib"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SourceLib.lua",
 	["Selector"] = "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua",
 	["VPrediction"] = "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua",
 	["SOW"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua"
@@ -36,7 +36,7 @@ function Initiate()
 	end
 	if DOWNLOADING_LIBS then return true end
 	if SCRIPT_UPDATER["Activate"] then
-		SourceUpdater(SCRIPT_INFO["Name"], SCRIPT_INFO["Version"], SCRIPT_UPDATER["URL_HOST"], SCRIPT_UPDATER["URL_PATH"], SCRIPT_UPDATER["Script"], SCRIPT_UPDATER["URL_VERSION"]):CheckUpdate()
+		SourceUpdater("<font color=\"#00A300\">"..SCRIPT_INFO["Name"].."</font>", SCRIPT_INFO["Version"], SCRIPT_UPDATER["URL_HOST"], SCRIPT_UPDATER["URL_PATH"], SCRIPT_UPDATER["Script"], SCRIPT_UPDATER["URL_VERSION"]):CheckUpdate()
 	end
 end
 if Initiate() then return end
