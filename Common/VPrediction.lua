@@ -1,6 +1,6 @@
 local version = "2.51"
 local TESTVERSION = false
-local AUTOUPDATE = false
+local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/LegendBot/Scripts/master/Common/VPrediction.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = LIB_PATH.."vPrediction.lua"
