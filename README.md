@@ -14,6 +14,7 @@ Instructions;
 Scripts;
 =======
 
+ - **[LegendKarthus][11]** ([Thread Link][12])
  - **[LegendKassadin][3]** ([Thread Link][4])
  - **[LegendKennen][5]** ([Thread Link][6])
  
@@ -36,3 +37,5 @@ Libraries;
   [8]: https://github.com/LegendBot/Scripts/blob/master/Common/Selector.lua
   [9]: https://github.com/LegendBot/Scripts/blob/master/Common/SourceLib.lua
   [10]: https://github.com/LegendBot/Scripts/blob/master/Common/VPrediction.lua
+  [11]: https://github.com/LegendBot/Scripts/blob/master/LegendKarthus.lua
+  [12]:  http://botoflegends.com/forum/topic/22792-
