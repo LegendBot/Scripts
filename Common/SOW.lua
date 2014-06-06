@@ -1,5 +1,5 @@
 local version = "1.130"
-local AUTOUPDATE = false
+local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/LegendBot/Scripts/master/Common/SOW.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = LIB_PATH.."SOW.lua"
