@@ -16,7 +16,7 @@ Instructions;
 
 Scripts;
 =======
-***Disclaimer**: If a script in our repository is not linked here, I urge you to not use that script as it may be going through a test phase and cause errors for you.*
+*Disclaimer: If a script in our repository is not linked here, I urge you to not use that script as it may be going through a test phase and cause errors for you.*
 
  - **[LegendKarthus][11]** ([Thread Link][12])
  - **[LegendKassadin][3]** ([Thread Link][4])
@@ -24,7 +24,7 @@ Scripts;
 
 Libraries;
 =========
-***Disclaimer**: These Libraries were not created by the LegendSeries team, we simply keep our own local version so that we can verify every update posted by the creators to see if they work with our Scripts.*
+*Disclaimer: These Libraries were not created by the LegendSeries team, we simply keep our own local version so that we can verify every update posted by the creators to see if they work with our Scripts.*
 
  - **[SOW][7]**
  - **[Selector][8]**
