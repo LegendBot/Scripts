@@ -1,27 +1,49 @@
-local version = 0.005
 if not VIP_USER or myHero.charName ~= "Karthus" then return end
+local SCRIPT_INFO = {
+	["Name"] = "LegendKarthus",
+	["Version"] = 0.006,
+	["Author"] = {
+		["Turtlebot"] = "http://botoflegends.com/forum/user/18902-"
+	},
+	["Credits"] = {
+		["Pain"] = "http://botoflegends.com/forum/user/2005-"
+	},		
+}
+local SCRIPT_UPDATER = {
+	["Activate"] = true,
+	["Script"] = SCRIPT_PATH..GetCurrentEnv().FILE_NAME,
+	["URL_HOST"] = "raw.github.com",
+	["URL_PATH"] = "/LegendBot/Scripts/master/LegendKarthus.lua",
+	["URL_VERSION"] = "/LegendBot/Scripts/master/Versions/LegendKarthus.version"
+}
+local SCRIPT_LIBS = {
+	["SourceLib"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SourceLib.lua",
+	["Selector"] = "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua",
+	["VPrediction"] = "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua",
+	["SOW"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua"
+}
+
+function PrintMessage(message) 
+	print("<font color=\"#00A300\"><b>"..SCRIPT_INFO["Name"]..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>")
+end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
-		local scriptName = "LegendKarthus"
-		printMessage = function(message) print("<font color=\"#00A300\"><b>"..scriptName..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>") end
-		if FileExist(LIB_PATH.."SourceLib.lua") then
-			require 'SourceLib'
-		else
-			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
-			return true
+		for LIBRARY, LIBRARY_URL in pairs(SCRIPT_LIBS) do
+			if FileExist(LIB_PATH..LIBRARY..".lua") then
+				require(LIBRARY)
+			else
+				DOWNLOADING_LIBS = true
+				PrintMessage("Missing Library! Downloading "..LIBRARY..". If the library doesn't download, please download it manually.")
+				DownloadFile(LIBRARY_URL,LIB_PATH..LIBRARY..".lua",function() PrintMessage("Successfully downloaded "..LIBRARY) end)
+			end
 		end
-		local libDownloader = Require(scriptName)
-		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua")
-		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")
-		libDownloader:Check()
-		if libDownloader.downloadNeeded then printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") return true end
-	    SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKarthus.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKarthus.version"):CheckUpdate()
-		return false
+		if DOWNLOADING_LIBS then return true end
+		if SCRIPT_UPDATER["Activate"] then
+			SourceUpdater("<font color=\"#00A300\">"..SCRIPT_INFO["Name"].."</font>", SCRIPT_INFO["Version"], SCRIPT_UPDATER["URL_HOST"], SCRIPT_UPDATER["URL_PATH"], SCRIPT_UPDATER["Script"], SCRIPT_UPDATER["URL_VERSION"]):CheckUpdate()
+		end
 	end
 	if Initiate() then return end
-	printMessage("Loaded")
+	PrintMessage("Loaded")
 --}
 --{ Initiate Data Load
 	local Karthus = {
@@ -56,7 +78,7 @@ if not VIP_USER or myHero.charName ~= "Karthus" then return end
 				--{ Initiate Menu
 			Menu = scriptConfig("Karthus","LegendKarthus")
 			Menu:addParam("Author","Author: Turtle",5,"")
-			Menu:addParam("Version","Version: "..version,5,"")
+			Menu:addParam("Version","Version: "..SCRIPT_INFO["Version"],5,"")
 			--{ General/Key Bindings
 				Menu:addSubMenu("Karthus: General","General")
 				Menu.General:addParam("Combo","Combo",2,false,32)
