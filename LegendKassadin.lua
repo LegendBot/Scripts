@@ -1,33 +1,49 @@
-local version = 0.011
 if not VIP_USER or myHero.charName ~= "Kassadin" then return end
+local SCRIPT_INFO = {
+	["Name"] = "LegendKassadin",
+	["Version"] = 0.012,
+	["Author"] = {
+		["Pain"] = "http://botoflegends.com/forum/user/2005-"
+	},
+	["Credits"] = {
+		["Turtlebot"] = "http://botoflegends.com/forum/user/18902-"
+	},		
+}
+local SCRIPT_UPDATER = {
+	["Activate"] = true,
+	["Script"] = SCRIPT_PATH..GetCurrentEnv().FILE_NAME,
+	["URL_HOST"] = "raw.github.com",
+	["URL_PATH"] = "/LegendBot/Scripts/master/LegendKassadin.lua",
+	["URL_VERSION"] = "/LegendBot/Scripts/master/Versions/LegendKassadin.version"
+}
+local SCRIPT_LIBS = {
+	["SourceLib"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SourceLib.lua",
+	["Selector"] = "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua",
+	["VPrediction"] = "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua",
+	["SOW"] = "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua"
+}
+
+function PrintMessage(message) 
+	print("<font color=\"#00A300\"><b>"..SCRIPT_INFO["Name"]..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>")
+end
 --{ Initiate Script (Checks for updates)
 	function Initiate()
-		local scriptName = "Kassadin"
-		printMessage = function(message) print("<font color=\"#00A300\"><b>"..scriptName..":</b></font> <font color=\"#FFFFFF\">"..message.."</font>") end
-		if os.time() > os.time{year=2014, month=6, day=30, hour=0, sec=1} then
-			printMessage("A fail safe has disabled the script, contact the Author for access.")
-			return true
+		for LIBRARY, LIBRARY_URL in pairs(SCRIPT_LIBS) do
+			if FileExist(LIB_PATH..LIBRARY..".lua") then
+				require(LIBRARY)
+			else
+				DOWNLOADING_LIBS = true
+				PrintMessage("Missing Library! Downloading "..LIBRARY..". If the library doesn't download, please download it manually.")
+				DownloadFile(LIBRARY_URL,LIB_PATH..LIBRARY..".lua",function() PrintMessage("Successfully downloaded "..LIBRARY) end)
+			end
 		end
-		if FileExist(LIB_PATH.."SourceLib.lua") then
-			require 'SourceLib'
-		else
-			printMessage("Downloading SourceLib, please wait whilst the required library is being downloaded.")
-			DownloadFile("https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",LIB_PATH.."SourceLib.lua", function() printMessage("SourceLib successfully downloaded, please reload (double [F9]).") end)
-			return true
+		if DOWNLOADING_LIBS then return true end
+		if SCRIPT_UPDATER["Activate"] then
+			SourceUpdater("<font color=\"#00A300\">"..SCRIPT_INFO["Name"].."</font>", SCRIPT_INFO["Version"], SCRIPT_UPDATER["URL_HOST"], SCRIPT_UPDATER["URL_PATH"], SCRIPT_UPDATER["Script"], SCRIPT_UPDATER["URL_VERSION"]):CheckUpdate()
 		end
-		local libDownloader = Require(scriptName)
-		libDownloader:Add("Selector",	 "https://raw.github.com/LegendBot/Scripts/master/Common/Selector.lua")
-		libDownloader:Add("VPrediction", "https://raw.github.com/LegendBot/Scripts/master/Common/VPrediction.lua")
-		libDownloader:Add("SOW",		 "https://raw.github.com/LegendBot/Scripts/master/Common/SOW.lua")		
-		libDownloader:Check()
-		if libDownloader.downloadNeeded then 
-			printMessage("Downloading required libraries, please wait whilst the required files are being downloaded.") 
-			return true 
-		end
-		SourceUpdater(scriptName, version, "raw.github.com", "/LegendBot/Scripts/master/LegendKassadin.lua", SCRIPT_PATH..GetCurrentEnv().FILE_NAME, "/LegendBot/Scripts/master/Versions/LegendKassadin.version"):CheckUpdate()
-		return false
 	end
 	if Initiate() then return end
+	PrintMessage("Loaded")
 --}
 --{ Initiate Data Load
 	local Kassadin = {
@@ -73,7 +89,7 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 				Menu:addSubMenu("Kassadin: Script Details","Script")
 				Menu.Script:addParam("Author","Author: Pain",5,"")
 				Menu.Script:addParam("Credits","Credits: Turtlebot, AWA, Hellsing.",5,"")
-				Menu.Script:addParam("Version","Version: "..version,5,"")
+				Menu.Script:addParam("Version","Version: "..SCRIPT_INFO["Version"],5,"")
 			--}
 			--{ General/Key Bindings
 				Menu:addSubMenu("Kassadin: General","General")
@@ -194,7 +210,6 @@ if not VIP_USER or myHero.charName ~= "Kassadin" then return end
 				if Menu.Perma.EW then Menu.Extra:permaShow("WReset") end
 			--}
 		--}
-		printMessage("Loaded")
 	end
 --}
 --{ Script Loop
