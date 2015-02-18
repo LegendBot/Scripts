@@ -1,3 +1,10 @@
+LegendSeries is currently outdated.
+===================================
+
+
+
+
+
 LegendSeries Introduction;
 ================
 LegendSeries is an amazing collection of scripts created and provided by;
